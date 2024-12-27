@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyManager - Dashboard</title>
+    <!-- CSS Libraries -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../assets/css/styles.css">
+</head>
+<body>
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <nav id="sidebar" class="bg-dark text-white">
+            <div class="sidebar-header p-3">
+                <h3>MyManager</h3>
+            </div>
+            <ul class="list-unstyled components p-3">
+                <li class="active">
+                    <a href="dashboard.html" class="nav-link text-white">
+                        <i class="bi bi-speedometer2"></i> Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="users.html" class="nav-link text-white">
+                        <i class="bi bi-people"></i> Users
+                    </a>
+                </li>
+                <li>
+                    <a href="products.html" class="nav-link text-white">
+                        <i class="bi bi-box"></i> Products
+                    </a>
+                </li>
+                <li>
+                    <a href="orders.html" class="nav-link text-white">
+                        <i class="bi bi-cart"></i> Orders
+                    </a>
+                </li>
+                <li>
+                    <a href="clients.html" class="nav-link text-white">
+                        <i class="bi bi-person-badge"></i> Clients
+                    </a>
+                </li>
+                <li>
+                    <a href="invoices.html" class="nav-link text-white">
+                        <i class="bi bi-receipt"></i> Invoices
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Page Content -->
+        <div id="content">
+            <!-- Header -->
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <div class="container-fluid">
+                    <button type="button" id="sidebarCollapse" class="btn btn-dark">
+                        <i class="bi bi-list"></i>
+                    </button>
+                    <div class="d-flex align-items-center">
+                        <div class="dropdown me-3">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="languageDropdown" data-bs-toggle="dropdown">
+                                <i class="bi bi-globe"></i> Language
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#" data-lang="en">English</a></li>
+                                <li><a class="dropdown-item" href="#" data-lang="fr">Français</a></li>
+                                <li><a class="dropdown-item" href="#" data-lang="ar">العربية</a></li>
+                            </ul>
+                        </div>
+                        <button class="btn btn-danger" id="logoutBtn">
+                            <i class="bi bi-box-arrow-right"></i> Logout
+                        </button>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Dashboard Content -->
+            <div class="container-fluid p-4">
+                <h2>Dashboard</h2>
+                
+                <!-- Analytics Cards -->
+                <div class="row mt-4">
+                    <div class="col-md-3 mb-4">
+                        <div class="card bg-primary text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="card-title mb-0">Total Revenue</h6>
+                                        <h3 class="mt-2 mb-0" id="totalRevenue">$0</h3>
+                                        <small class="text-white-50" id="revenueChange">+0% from last month</small>
+                                    </div>
+                                    <i class="bi bi-currency-dollar fs-1"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-4">
+                        <div class="card bg-success text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="card-title mb-0">Total Orders</h6>
+                                        <h3 class="mt-2 mb-0" id="totalOrders">0</h3>
+                                        <small class="text-white-50" id="ordersChange">+0% from last month</small>
+                                    </div>
+                                    <i class="bi bi-cart fs-1"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-4">
+                        <div class="card bg-info text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="card-title mb-0">Active Clients</h6>
+                                        <h3 class="mt-2 mb-0" id="totalClients">0</h3>
+                                        <small class="text-white-50" id="clientsChange">+0% from last month</small>
+                                    </div>
+                                    <i class="bi bi-people fs-1"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-4">
+                        <div class="card bg-warning text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="card-title mb-0">Pending Invoices</h6>
+                                        <h3 class="mt-2 mb-0" id="pendingInvoices">0</h3>
+                                        <small class="text-white-50" id="invoicesChange">+0% from last month</small>
+                                    </div>
+                                    <i class="bi bi-receipt fs-1"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Row -->
+                <div class="row mt-4">
+                    <div class="col-md-8 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Revenue & Orders Trend</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="revenueChart" height="300"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Orders by Status</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="orderStatusChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Second Row of Charts -->
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Top Products</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="topProductsChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Client Activity</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="clientActivityChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity Table -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Recent Activity</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Date</th>
+                                                <th>Type</th>
+                                                <th>Description</th>
+                                                <th>Status</th>
+                                                <th>Amount</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="recentActivityTable">
+                                            <!-- Activity rows will be inserted here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts - Updated Faker.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Updated Faker.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Faker/3.1.0/faker.min.js"></script>
+    <!-- Our scripts in correct order -->
+    <script src="../assets/js/mock-generator.js"></script>
+    <script src="../assets/js/api.js"></script>
+    <script src="../assets/js/dashboard.js"></script>
+</body>
+</html> 

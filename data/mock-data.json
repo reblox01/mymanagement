@@ -1,0 +1,50 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "Admin User",
+      "email": "admin@example.com",
+      "role": "admin",
+      "status": "active"
+    }
+  ],
+  "products": [
+    {
+      "id": 1,
+      "name": "Product 1",
+      "category": "Electronics",
+      "price": 999.99,
+      "stock": 50,
+      "image": "../assets/img/product1.jpg"
+    }
+  ],
+  "orders": [
+    {
+      "id": 1,
+      "clientId": 1,
+      "date": "2024-03-20",
+      "status": "pending",
+      "total": 999.99
+    }
+  ],
+  "clients": [
+    {
+      "id": 1,
+      "name": "John Doe",
+      "email": "john@example.com",
+      "phone": "+1234567890",
+      "type": "individual"
+    }
+  ],
+  "invoices": [
+    {
+      "id": 1,
+      "clientId": 1,
+      "orderId": 1,
+      "date": "2024-03-20",
+      "dueDate": "2024-04-20",
+      "amount": 999.99,
+      "status": "pending"
+    }
+  ]
+} 
