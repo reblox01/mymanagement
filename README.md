@@ -101,4 +101,4 @@ MyManager/
 
 ## Licence
 
-Licence MIT
+[Licence MIT](LICENSE)
