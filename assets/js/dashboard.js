@@ -7,6 +7,7 @@ class DashboardManager {
     async init() {
         try {
             await this.loadData();
+            await this.generateSampleData();
             this.setupCharts();
             this.updateAnalytics();
             this.updateRecentActivity();
@@ -116,22 +117,126 @@ class DashboardManager {
         }
     }
 
+    async generateSampleData() {
+        // Generate sample data if none exists
+        if (!this.products || this.products.length === 0) {
+            this.products = Array.from({ length: 10 }, (_, i) => ({
+                id: (i + 1).toString(),
+                name: `Product ${i + 1}`,
+                description: `Description for Product ${i + 1}`,
+                price: (Math.random() * 100 + 20).toFixed(2),
+                stock: Math.floor(Math.random() * 100) + 1,
+                category: ['Electronics', 'Clothing', 'Books', 'Food'][Math.floor(Math.random() * 4)]
+            }));
+            localStorage.setItem('products', JSON.stringify(this.products));
+        }
+
+        if (!this.clients || this.clients.length === 0) {
+            this.clients = Array.from({ length: 8 }, (_, i) => ({
+                id: (i + 1).toString(),
+                name: `Client ${i + 1}`,
+                email: `client${i + 1}@example.com`,
+                phone: `+1234567890${i}`,
+                address: `${i + 1} Sample Street`,
+                createdAt: new Date(Date.now() - Math.random() * 90 * 24 * 60 * 60 * 1000).toISOString()
+            }));
+            localStorage.setItem('clients', JSON.stringify(this.clients));
+        }
+
+        if (!this.orders || this.orders.length === 0) {
+            this.orders = Array.from({ length: 20 }, (_, i) => ({
+                id: (i + 1).toString(),
+                date: new Date(Date.now() - Math.random() * 90 * 24 * 60 * 60 * 1000).toISOString(),
+                clientId: this.clients[Math.floor(Math.random() * this.clients.length)].id,
+                items: Array.from({ length: Math.floor(Math.random() * 3) + 1 }, () => ({
+                    productId: this.products[Math.floor(Math.random() * this.products.length)].id,
+                    quantity: Math.floor(Math.random() * 5) + 1,
+                    price: (Math.random() * 100 + 20).toFixed(2)
+                })),
+                status: ['pending', 'processing', 'shipped', 'delivered'][Math.floor(Math.random() * 4)],
+                total: (Math.random() * 500 + 100).toFixed(2)
+            }));
+            localStorage.setItem('orders', JSON.stringify(this.orders));
+        }
+
+        if (!this.invoices || this.invoices.length === 0) {
+            this.invoices = Array.from({ length: 15 }, (_, i) => {
+                const client = this.clients[Math.floor(Math.random() * this.clients.length)];
+                return {
+                    id: (i + 1).toString(),
+                    date: new Date(Date.now() - Math.random() * 90 * 24 * 60 * 60 * 1000).toISOString(),
+                    dueDate: new Date(Date.now() + Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString(),
+                    client: {
+                        id: client.id,
+                        name: client.name,
+                        email: client.email
+                    },
+                    items: Array.from({ length: Math.floor(Math.random() * 3) + 1 }, () => ({
+                        description: `Item ${Math.floor(Math.random() * 100)}`,
+                        quantity: Math.floor(Math.random() * 5) + 1,
+                        price: (Math.random() * 100 + 20).toFixed(2)
+                    })),
+                    total: (Math.random() * 500 + 100).toFixed(2),
+                    status: ['paid', 'unpaid', 'overdue'][Math.floor(Math.random() * 3)]
+                };
+            });
+            localStorage.setItem('invoices', JSON.stringify(this.invoices));
+        }
+
+        // Save all data to localStorage
+        localStorage.setItem('products', JSON.stringify(this.products));
+        localStorage.setItem('clients', JSON.stringify(this.clients));
+        localStorage.setItem('orders', JSON.stringify(this.orders));
+        localStorage.setItem('invoices', JSON.stringify(this.invoices));
+    }
+
     updateAnalytics() {
-        // Calculate total revenue
+        // Calculate total revenue from orders
         const totalRevenue = this.orders.reduce((sum, order) => sum + parseFloat(order.total), 0);
         document.getElementById('totalRevenue').textContent = `$${totalRevenue.toFixed(2)}`;
 
         // Calculate revenue change
         const lastMonthRevenue = this.calculateLastMonthRevenue();
-        const revenueChange = ((totalRevenue - lastMonthRevenue) / lastMonthRevenue * 100) || 0;
+        const revenueChange = ((totalRevenue - lastMonthRevenue) / (lastMonthRevenue || 1) * 100);
         document.getElementById('revenueChange').textContent = 
             `${revenueChange > 0 ? '+' : ''}${revenueChange.toFixed(1)}% from last month`;
 
-        // Update other analytics
+        // Update orders count and change
         document.getElementById('totalOrders').textContent = this.orders.length;
+        const lastMonthOrders = this.orders.filter(order => {
+            const orderDate = new Date(order.date);
+            const lastMonth = new Date();
+            lastMonth.setMonth(lastMonth.getMonth() - 1);
+            return orderDate.getMonth() === lastMonth.getMonth();
+        }).length;
+        const ordersChange = ((this.orders.length - lastMonthOrders) / (lastMonthOrders || 1) * 100);
+        document.getElementById('ordersChange').textContent = 
+            `${ordersChange > 0 ? '+' : ''}${ordersChange.toFixed(1)}% from last month`;
+
+        // Update clients count and change
         document.getElementById('totalClients').textContent = this.clients.length;
-        document.getElementById('pendingInvoices').textContent = 
-            this.invoices.filter(inv => inv.status === 'unpaid').length;
+        const lastMonthClients = this.clients.filter(client => {
+            const clientDate = new Date(client.createdAt);
+            const lastMonth = new Date();
+            lastMonth.setMonth(lastMonth.getMonth() - 1);
+            return clientDate.getMonth() === lastMonth.getMonth();
+        }).length;
+        const clientsChange = ((this.clients.length - lastMonthClients) / (lastMonthClients || 1) * 100);
+        document.getElementById('clientsChange').textContent = 
+            `${clientsChange > 0 ? '+' : ''}${clientsChange.toFixed(1)}% from last month`;
+
+        // Update pending invoices count
+        const pendingInvoices = this.invoices.filter(inv => inv.status === 'unpaid' || inv.status === 'overdue').length;
+        document.getElementById('pendingInvoices').textContent = pendingInvoices;
+        const lastMonthPending = this.invoices.filter(inv => {
+            const invDate = new Date(inv.date);
+            const lastMonth = new Date();
+            lastMonth.setMonth(lastMonth.getMonth() - 1);
+            return invDate.getMonth() === lastMonth.getMonth() && (inv.status === 'unpaid' || inv.status === 'overdue');
+        }).length;
+        const invoicesChange = ((pendingInvoices - lastMonthPending) / (lastMonthPending || 1) * 100);
+        document.getElementById('invoicesChange').textContent = 
+            `${invoicesChange > 0 ? '+' : ''}${invoicesChange.toFixed(1)}% from last month`;
     }
 
     setupCharts() {
