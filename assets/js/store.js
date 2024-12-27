@@ -4,7 +4,7 @@ class StoreManager {
         this.categories = [];
         this.cart = [];
         this.currentPage = 1;
-        this.itemsPerPage = 8;
+        this.itemsPerPage = 10;
         this.init();
     }
 

@@ -5,7 +5,7 @@ class OrdersManager {
         this.clients = [];
         this.products = [];
         this.currentPage = 1;
-        this.ordersPerPage = 8;
+        this.ordersPerPage = 10;
         this.editingOrderId = null;
         this.init();
     }

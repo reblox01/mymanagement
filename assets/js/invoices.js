@@ -5,7 +5,7 @@ class InvoicesManager {
         this.clients = [];
         this.orders = [];
         this.currentPage = 1;
-        this.invoicesPerPage = 8;
+        this.invoicesPerPage = 10;
         this.editingInvoiceId = null;
         this.init();
     }
