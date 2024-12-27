@@ -1,17 +1,32 @@
-# MyManager - Backoffice Application
+# MyManager - Application de Gestion et E-commerce
 
-A comprehensive back-office web application for managing users, products, orders, clients, and invoices.
+Une application web complète comprenant un back-office pour la gestion et une interface e-commerce pour les clients.
 
-## Features
+## Fonctionnalités
 
-- CRUD operations for multiple entities
-- Responsive dashboard with real-time charts
-- Internationalization support (English, French, Arabic)
-- Authentication system
-- Data export functionality
-- Responsive design
+### Back-office
+- Opérations CRUD pour plusieurs entités :
+  - Utilisateurs
+  - Produits
+  - Commandes
+  - Clients
+  - Factures
+- Tableau de bord avec graphiques en temps réel
+- Support multilingue (Anglais, Français, Arabe)
+- Système d'authentification
+- Exportation de données
+- Design responsive
 
-## Project Structure 
+### E-commerce
+- Catalogue de produits avec filtres
+- Système de catégories
+- Panier d'achat
+- Commande en tant qu'invité
+- Interface responsive
+- Recherche de produits
+- Tri des produits
+
+## Structure du Projet 
 
 ```
 MyManager/
@@ -21,7 +36,11 @@ MyManager/
 │ ├── js/
 │ │ ├── main.js
 │ │ ├── dashboard.js
-│ │ ├── crud.js
+│ │ ├── store.js
+│ │ ├── orders.js
+│ │ ├── products.js
+│ │ ├── clients.js
+│ │ ├── invoices.js
 │ │ └── api.js
 │ ├── img/
 │ │ └── logo.png
@@ -30,6 +49,7 @@ MyManager/
 ├── pages/
 │ ├── login.html
 │ ├── dashboard.html
+│ ├── home.html
 │ ├── users.html
 │ ├── products.html
 │ ├── orders.html
@@ -39,38 +59,46 @@ MyManager/
 └── README.md
 ```
 
-## Setup
+## Installation
 
-1. Clone the repository
-2. Configure the API endpoint in `assets/js/api.js`
-3. Open `index.html` in a web browser
+1. Cloner le dépôt
+2. Configurer le point d'accès API dans `assets/js/api.js`
+3. Ouvrir `index.html` dans un navigateur web
 
-## Usage
+## Utilisation
 
-1. Login using credentials:
-   - Username: admin
-   - Password: admin
+### Back-office
+1. Se connecter avec les identifiants :
+   - Nom d'utilisateur : admin
+   - Mot de passe : admin
+2. Naviguer dans les différentes sections via la barre latérale
+3. Effectuer des opérations CRUD sur les entités
+4. Consulter les statistiques du tableau de bord
+5. Exporter les données au format CSV
 
-2. Navigate through different sections using the sidebar
-3. Perform CRUD operations on entities
-4. View dashboard statistics and charts
-5. Export data in CSV format
+### E-commerce
+1. Accéder à la boutique via `home.html`
+2. Parcourir les produits par catégorie
+3. Utiliser les filtres et la recherche
+4. Ajouter des produits au panier
+5. Passer une commande (en tant qu'invité)
 
-## Development
+## Développement
 
-- Built with vanilla JavaScript
-- Uses Chart.js for data visualization
-- Bootstrap for responsive design
-- Mock API with JSON data
+- Construit avec JavaScript vanilla
+- Utilise Chart.js pour la visualisation des données
+- Bootstrap pour le design responsive
+- API simulée avec données JSON
+- LocalStorage pour la persistance des données
 
-## Contributing
+## Contribution
 
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
+1. Forker le dépôt
+2. Créer une branche pour la fonctionnalité
+3. Commiter les changements
+4. Pousser vers la branche
+5. Créer une Pull Request
 
-## License
+## Licence
 
-MIT License
+Licence MIT
