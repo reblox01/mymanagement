@@ -24,39 +24,55 @@ class OrdersManager {
     }
 
     async loadData() {
-        // Load clients
-        const savedClients = localStorage.getItem('clients');
-        this.clients = savedClients ? JSON.parse(savedClients) : [];
+        try {
+            // Load orders from localStorage first
+            const savedOrders = localStorage.getItem('orders');
+            this.orders = savedOrders ? JSON.parse(savedOrders) : [];
 
-        // Load products
-        const savedProducts = localStorage.getItem('products');
-        this.products = savedProducts ? JSON.parse(savedProducts) : [];
+            // Load clients from localStorage
+            const savedClients = localStorage.getItem('clients');
+            this.clients = savedClients ? JSON.parse(savedClients) : [];
 
-        // Load orders
-        const savedOrders = localStorage.getItem('orders');
-        if (savedOrders) {
-            this.orders = JSON.parse(savedOrders);
-        } else {
-            // Create sample orders if none exist
-            this.orders = Array.from({ length: 15 }, (_, i) => ({
-                id: (i + 1).toString(),
-                date: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-                clientId: this.clients[Math.floor(Math.random() * this.clients.length)]?.id || '1',
-                items: [
-                    {
-                        productId: this.products[Math.floor(Math.random() * this.products.length)]?.id || '1',
-                        quantity: Math.floor(Math.random() * 5) + 1,
-                        price: (Math.random() * 100 + 20).toFixed(2)
-                    }
-                ],
-                status: ['pending', 'processing', 'shipped', 'delivered'][Math.floor(Math.random() * 4)],
-                paymentStatus: ['paid', 'unpaid'][Math.floor(Math.random() * 2)],
-                notes: '',
-                total: (Math.random() * 500 + 100).toFixed(2)
-            }));
+            // Load products from localStorage
+            const savedProducts = localStorage.getItem('products');
+            this.products = savedProducts ? JSON.parse(savedProducts) : [];
 
-            localStorage.setItem('orders', JSON.stringify(this.orders));
+            // Set filtered orders
+            this.filteredOrders = [...this.orders];
+
+            // Try to load from API if available
+            try {
+                const [ordersRes, clientsRes, productsRes] = await Promise.all([
+                    api.get('/orders'),
+                    api.get('/clients'),
+                    api.get('/products')
+                ]);
+
+                if (ordersRes.data && ordersRes.data.length > 0) {
+                    this.orders = ordersRes.data;
+                }
+                if (clientsRes.data && clientsRes.data.length > 0) {
+                    this.clients = clientsRes.data;
+                }
+                if (productsRes.data && productsRes.data.length > 0) {
+                    this.products = productsRes.data;
+                }
+
+                this.filteredOrders = [...this.orders];
+            } catch (error) {
+                console.warn('API fetch failed, using localStorage data');
+            }
+
+        } catch (error) {
+            console.error('Error loading data:', error);
+            this.orders = [];
+            this.clients = [];
+            this.products = [];
+            this.filteredOrders = [];
         }
+
+        // Render the orders after loading data
+        this.renderOrders();
     }
 
     setupEventListeners() {
@@ -161,33 +177,30 @@ class OrdersManager {
         if (paginatedOrders.length === 0) {
             container.innerHTML = `
                 <tr>
-                    <td colspan="8" class="text-center">No orders found matching your criteria.</td>
+                    <td colspan="7" class="text-center">No orders found</td>
                 </tr>
             `;
-        } else {
-            container.innerHTML = paginatedOrders.map(order => {
-                const client = this.clients.find(c => c.id === order.clientId);
-                return `
-                    <tr>
-                        <td>#${order.id}</td>
-                        <td>${order.date}</td>
-                        <td>${client ? client.name : 'Unknown Client'}</td>
-                        <td>${order.items.length} items</td>
-                        <td>$${parseFloat(order.total).toFixed(2)}</td>
-                        <td><span class="badge bg-${this.getStatusBadgeColor(order.status)}">${order.status}</span></td>
-                        <td><span class="badge bg-${this.getPaymentBadgeColor(order.paymentStatus)}">${order.paymentStatus}</span></td>
-                        <td>
-                            <button class="btn btn-primary btn-sm" onclick="ordersManager.editOrder('${order.id}')">
-                                <i class="bi bi-pencil"></i>
-                            </button>
-                            <button class="btn btn-danger btn-sm ms-1" onclick="ordersManager.deleteOrder('${order.id}')">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
+            return;
         }
+
+        container.innerHTML = paginatedOrders.map(order => `
+            <tr>
+                <td>#${order.id}</td>
+                <td>${order.date}</td>
+                <td>${order.clientName || 'Guest User'}</td>
+                <td>${order.items.map(item => `${item.name} (${item.quantity})`).join(', ')}</td>
+                <td>$${parseFloat(order.total).toFixed(2)}</td>
+                <td><span class="badge bg-${this.getStatusBadgeColor(order.status)}">${order.status}</span></td>
+                <td>
+                    <button class="btn btn-primary btn-sm" onclick="ordersManager.editOrder('${order.id}')">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="btn btn-danger btn-sm ms-1" onclick="ordersManager.deleteOrder('${order.id}')">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        `).join('');
 
         this.renderPagination(ordersToShow.length);
     }

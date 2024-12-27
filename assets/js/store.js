@@ -293,24 +293,76 @@ class StoreManager {
         }
     }
 
-    checkout() {
+    async checkout() {
         if (this.cart.length === 0) {
             alert('Your cart is empty!');
             return;
         }
 
-        // Here you would typically redirect to a checkout page
-        alert('Proceeding to checkout...');
-        // Clear cart after successful checkout
-        this.cart = [];
-        localStorage.setItem('cart', JSON.stringify(this.cart));
-        this.updateCartCount();
-        this.renderCart();
-        
-        // Close modal
-        const modal = bootstrap.Modal.getInstance(document.getElementById('cartModal'));
-        if (modal) {
-            modal.hide();
+        try {
+            // Get existing orders
+            let existingOrders = [];
+            try {
+                const savedOrders = localStorage.getItem('orders');
+                existingOrders = savedOrders ? JSON.parse(savedOrders) : [];
+            } catch (error) {
+                console.warn('Error loading existing orders:', error);
+                existingOrders = [];
+            }
+
+            // Create order items from cart
+            const orderItems = this.cart.map(item => {
+                const product = this.products.find(p => p.id === item.productId);
+                return {
+                    productId: item.productId,
+                    name: product.name,
+                    quantity: item.quantity,
+                    price: product.price
+                };
+            });
+
+            // Calculate total
+            const total = this.cart.reduce((sum, item) => {
+                const product = this.products.find(p => p.id === item.productId);
+                return sum + (parseFloat(product.price) * item.quantity);
+            }, 0);
+
+            // Create new order
+            const newOrder = {
+                id: Date.now().toString(),
+                date: new Date().toISOString().split('T')[0],
+                clientId: "guest",
+                clientName: "Guest User",
+                items: orderItems,
+                status: "pending",
+                total: total.toFixed(2),
+                paymentStatus: "unpaid"
+            };
+
+            // Add new order to existing orders
+            existingOrders.unshift(newOrder);
+
+            // Save updated orders
+            localStorage.setItem('orders', JSON.stringify(existingOrders));
+
+            // Clear cart
+            this.cart = [];
+            localStorage.setItem('cart', JSON.stringify(this.cart));
+            this.updateCartCount();
+            this.renderCart();
+
+            // Show success message
+            alert('Order placed successfully! Check the dashboard orders section.');
+
+            // Close modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('cartModal'));
+            if (modal) {
+                modal.hide();
+            }
+
+        } catch (error) {
+            console.error('Error during checkout:', error);
+            alert('There was an error processing your order. Please try again.');
         }
     }
 }
